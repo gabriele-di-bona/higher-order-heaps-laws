@@ -1,0 +1,10 @@
+*.ipynb_checkpoints*
+corpus/
+data/
+figures/
+old/
+*.sh.o*
+*.sh.e*
+*foo.gt.gz
+*__pycache__*
+*DS_Store*
