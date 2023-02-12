@@ -149,6 +149,8 @@ python ~/python_scripts/compute_entropies.py -ID N -number_reshuffles 10 -datase
 Adding the argument `-order False`, it considers the pairs BA and AB as the same, so order is not considered.
 More info can be found in the python script.
 
+ACHTUNG: the longer the sequence, the longer the computation of entropies! This does not scale quite well, so be careful.
+
 ### Analyse sequences
 We provide another script to run the analysis of a sequence either of a dataset or of a model. 
 Notice that, for the dataset, this doesn't do anything more that it is not already done in the related notebook to prepare the data. 
