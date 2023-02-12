@@ -107,14 +107,16 @@ if putTogether == False:
             # SAVE ORIGINAL SEQUENCES!
             sequence = results['sequence']
             sequence_labels = results['sequence_labels']
-            os.makedirs(os.path.dirname(f"./data/UMST/simulations/raw_sequences/rho_{rho:.5f}/nu_{nu}/Tmax_{Tmax}/eta_{eta:.5f}/f'{run}.txt"), exist_ok=True)
-            f = open(f"./data/UMST/simulations/raw_sequences/rho_{rho:.5f}/nu_{nu}/Tmax_{Tmax}/eta_{eta:.5f}/f'{run}.txt", "a")
-            f.writelines([str(i) for i in sequence])
-            f.close()
-            os.makedirs(os.path.dirname(f"./data/UMST/simulations/raw_sequences_labels/rho_{rho:.5f}/nu_{nu}/Tmax_{Tmax}/eta_{eta:.5f}/{run}.txt"), exist_ok=True)
-            f = open(f"./data/UMST/simulations/raw_sequences_labels/rho_{rho:.5f}/nu_{nu}/Tmax_{Tmax}/eta_{eta:.5f}/{run}.txt", "a")
-            f.writelines([str(i) for i in sequence_labels])
-            f.close()
+            sequence_path = f"./data/UMST/simulations/raw_sequences/rho_{rho:.5f}/nu_{nu}/Tmax_{Tmax}/eta_{eta:.5f}/{run}.tsv"
+            os.makedirs(os.path.dirname(sequence_path), exist_ok=True)
+            with open(sequence_path, "w", newline='\n') as f_output:
+                tsv_output = csv.writer(f_output, delimiter='\n')
+                tsv_output.writerow(sequence)
+            sequence_labels_path = f"./data/UMST/simulations/raw_sequences_labels/rho_{rho:.5f}/nu_{nu}/Tmax_{Tmax}/eta_{eta:.5f}/{run}.tsv"
+            os.makedirs(os.path.dirname(sequence_labels_path), exist_ok=True)
+            with open(sequence_labels_path, "w", newline='\n') as f_output:
+                tsv_output = csv.writer(f_output, delimiter='\n')
+                tsv_output.writerow(sequence_labels)
     else:
         print("File already present")
     

@@ -17,16 +17,30 @@ from analyse_higher_entropy import *
 
    
 
-def analyse_sequence(sequence=np.array([]), consider_temporal_order_in_tuples=True, num_to_save=1000, find_novelties = True, 
-                     use_D_as_D_indices = False, indices = [],
-                     calculate_entropies_original = False, calculate_entropies_labels = True,
-                     D=None, D2=None, D3=None, D4=None, sequence_labels = None, 
-                     save_all=False, save_all_file_path = "./test.pkl", 
-                     save_light_file_path = "./test_light.pkl",
-                     save_entropies_file_path = "./test_entropy.pkl",
-                     save_entropies_original_file_path = "./test_entropy_original.pkl",
-                     calculate_beta_loglogregr_indices = False,
-                     do_prints = True, return_all = False):
+def analyse_sequence(
+    sequence=np.array([]), 
+    consider_temporal_order_in_tuples=True, 
+    num_to_save=1000, 
+    indices = [],
+    find_novelties = True, 
+    use_D_as_D_indices = False, 
+    D=None, 
+    D2=None, 
+    D3=None,
+    D4=None, 
+    sequence_labels = None, 
+    calculate_entropies_original = False, 
+    calculate_entropies_labels = True,
+    number_reshuffles = 10, 
+    save_all=False, 
+    save_all_file_path = "./test.pkl", 
+    save_light_file_path = "./test_light.pkl",
+    save_entropies_file_path = "./test_entropy.pkl",
+    save_entropies_original_file_path = "./test_entropy_original.pkl",
+    calculate_beta_loglogregr_indices = False,
+    do_prints = True, 
+    return_all = False
+):
     '''
         Computes and saves in a dictionary the array counting new elements, pairs, triplets and quadruplets.
         It also calculates the normalized Shannon Entropy and the exponents of the discovery arrays.
@@ -45,6 +59,7 @@ def analyse_sequence(sequence=np.array([]), consider_temporal_order_in_tuples=Tr
                 It's made by the set of indices coming from a linspace and geomspace of length num_to_save (list)
             - calculate_entropies_original: if True it calculates the entropies on the sequence of IDs (bool)
             - calculate_entropies_labels: if True it calculates the entropies on the sequence of labels, i.e. mothers of IDs (bool)
+            - number_reshuffles: number of times  entropies should be calculated on a reshuffle of the sequence (int)
             - D: array containing for each timestep the number of new elements in the sequence up to that point (np.array(int)).
                 If not provided (None), then it is calculated from sequence.
             - D: array containing for each timestep the number of new elements in the sequence up to that point (np.array(int)).
@@ -70,6 +85,9 @@ def analyse_sequence(sequence=np.array([]), consider_temporal_order_in_tuples=Tr
             - Saves the analysis results on a small subset of the indices on a light pickled dictionary, whose number is decided by num_to_save.
             - Returns the results and all calculations of Heaps' law and entropy (same dictionary saved with save_all=True)
     '''
+    # safety check that the provided sequence is a numpy array and not a list
+    sequence = np.array(sequence)
+    sequence_labels = np.array(sequence_labels)
     if use_D_as_D_indices == False:
         Tmax = len(sequence)
         
@@ -358,16 +376,19 @@ def analyse_sequence(sequence=np.array([]), consider_temporal_order_in_tuples=Tr
                 sequence_labels,
                 consider_temporal_order_in_tuples=consider_temporal_order_in_tuples, 
                 index_original_sequence = False,
-                number_reshuffles = 10,
+                number_reshuffles = number_reshuffles,
                 calc_entropy_pairs_on_reshuffled_singletons = False
             )
             for key,value in entropy_results.items():
                 results[key] = value
                 if 'weighted_diff_entropies' in key:
                     results_light[key] = value
-            os.makedirs(os.path.dirname(save_entropies_file_path), exist_ok=True)
-            with open(save_entropies_file_path,'wb') as fp:
-                pickle.dump(entropy_results,fp)
+            try:
+                os.makedirs(os.path.dirname(save_entropies_file_path), exist_ok=True)
+                with open(save_entropies_file_path,'wb') as fp:
+                    pickle.dump(entropy_results,fp)
+            except:
+                print("Exception: couldn't save entropies labels into", save_entropies_file_path, flush=True)
         else:
             if do_prints == True:
                 print("Couldn't calculate entropies on sequence of labels, sequence of labels not correctly provided!", flush=True)
@@ -417,7 +438,7 @@ def analyse_sequence(sequence=np.array([]), consider_temporal_order_in_tuples=Tr
             sequence,
             consider_temporal_order_in_tuples=consider_temporal_order_in_tuples, 
             index_original_sequence = False,
-            number_reshuffles = 10,
+            number_reshuffles = number_reshuffles,
             calc_entropy_pairs_on_reshuffled_singletons = False
         )
         for key,value in entropy_original_results.items():
@@ -425,9 +446,12 @@ def analyse_sequence(sequence=np.array([]), consider_temporal_order_in_tuples=Tr
             if 'weighted_diff_entropies' in key:
                 results_light[key+'_original_sequence'] = value
         
-        os.makedirs(os.path.dirname(save_entropies_original_file_path), exist_ok=True)
-        with open(save_entropies_original_file_path,'wb') as fp:
-            pickle.dump(entropy_original_results,fp)
+        try:
+            os.makedirs(os.path.dirname(save_entropies_original_file_path), exist_ok=True)
+            with open(save_entropies_original_file_path,'wb') as fp:
+                pickle.dump(entropy_original_results,fp)
+        except:
+            print("Exception: couldn't save entropies original into", save_entropies_original_file_path, flush=True)
         
     
 

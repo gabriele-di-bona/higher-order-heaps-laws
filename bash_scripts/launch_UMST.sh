@@ -14,4 +14,4 @@ conda activate gt
 # this bash script is supposed to be run from the subfolder outputs, so that the output goes directly there
 cd ../../python_scripts/
 
-python launch_UMST.py -ID ${SGE_TASK_ID} -rho 20 -eta 1 -starting_nu 11 -ending_nu 20 -Tmax 100000 -putTogether False -save_all True
+python launch_UMST.py -ID ${SGE_TASK_ID} -rho 20 -eta 1 -starting_nu 1 -ending_nu 20 -Tmax 100000 -putTogether False -save_all True
