@@ -118,6 +118,9 @@ Moreover, the original sequences of colors drawn and related labels can be found
 
 In order to calculate averages over multiple runs across the same set of parameters, launch the bash script `~/bash_scripts/UMST_put_together.sh`. The output is saved into the related folder (same as the light folder of the individual simulations), with name of the file `average_UMT_light_results.pkl`.
 
+#### Analytical results of the UMT
+The numerical integration of the differential equations found in the main paper has been done using the function `NIntegrate` of Mathematica 12, using a fine logarithmically spaced grid of N=1601 points $1 = t_0 < t_1 < \cdots < t_N = 10^{16}$. The fit of the integrated points has instead been done in the Jupyter notebook `~/notebooks/figures.ipynb`.
+
 ### ERRW model
 This model has been proposed in Iacopini et al. (2018), "Network Dynamics of Innovation Processes" (Physical Review Letters). Other details about this model can be found in the paper.
 
