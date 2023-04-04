@@ -119,14 +119,18 @@ Moreover, the original sequences of colors drawn and related labels can be found
 In order to calculate averages over multiple runs across the same set of parameters, launch the bash script `~/bash_scripts/UMST_put_together.sh`. The output is saved into the related folder (same as the light folder of the individual simulations), with name of the file `average_UMT_light_results.pkl`.
 
 #### Analytical results of the UMT
-The numerical integration of the differential equations found in the main paper has been done using the function `NIntegrate` of Mathematica 12, using a fine logarithmically spaced grid of N=1601 points $1 = t_0 < t_1 < \cdots < t_N = 10^{16}$. The fit of the integrated points has instead been done in the Jupyter notebook `~/notebooks/figures.ipynb`.
+The numerical integration of the differential equations found in the main paper has been done using the function `NIntegrate` of Mathematica 12, using a fine logarithmically spaced grid of N=1601 points $1 = t_0 < t_1 < \cdots < t_N = 10^{16}$. 
+Such analysis is done in `~/data/UMST/Analytic_UMT/AnalyticExp_final.nb` and `~/data/UMST/Analytic_UMT/AnalyticExp_triplet.nb`.
+The fit of the integrated points has instead been done in the Jupyter notebook `~/notebooks/figures.ipynb`.
 
 ### ERRW model
 This model has been proposed in Iacopini et al. (2018), "Network Dynamics of Innovation Processes" (Physical Review Letters). Other details about this model can be found in the paper.
 
-The code to generate sequences of this model can be obtained from the other Github repository TODO.
+You can use `~/jupyter_notebooks/run_ERRW_on_SW_nets.ipynb` to generate some sequences of this model on a small world network (Watts Strogatz model).
+You can do the same by using the python script `~/python_scripts/ERRW_SW.py` and its related bash script `~/bash_scripts/launch_ERRW.sh` to run multiple runs of the model separately.
+You can also modify the network, either using the same graph model with different parameter $p$ or $K$, or changing the model. 
 
-In this paper, we use sequences obtained from ERRWs on Small World networks.
+In this paper, we use sequences obtained from ERRWs on Small World networks with average degree $k=4$.
 Raw sequences are saved into `~/data/ERRW/SW/raw_sequences/`, with different parameters of $p$ (for the small world network) and for dw (the reinforcement parameter in the ERRW).
 These sequences are analysed through the python script `~/python_scripts/analyse_sequences.py` and related bash script `~/bash_scripts/analyse_sequences.sh` to launch them separately on each different sequence for all datasets and models through the cluster. The syntax is at follows.
 ```
