@@ -253,6 +253,30 @@ elif dataset_ID == 5:
     save_light_file_path = os.path.join(analysis_folder,'light_results',f'{file_name}.pkl')
     save_all_file_path = os.path.join(analysis_folder,'all_results',f'{file_name}.pkl')
     save_entropies_file_path = os.path.join(analysis_folder,'entropies_results',f'{file_name}.pkl')
+   
+    
+elif dataset_ID == 6: 
+    # directed ERRW
+    # here sequence and sequence_labels are the same
+    data_folder = os.path.join('./data/dir_ERRW/',folder_name_ERRW,'raw_sequences')
+    if consider_temporal_order_in_tuples:
+        analysis_folder = os.path.join('./data/dir_ERRW/',folder_name_ERRW,'analysis')
+    else:
+        analysis_folder = os.path.join('./data/dir_ERRW/',folder_name_ERRW,'analysis_tuples_without_order')
+    filepaths = sorted(find_pattern('*.txt', data_folder))
+    path = filepaths[ID]
+    print('Getting sequence from', path ,flush=True)
+    print('Getting sequence_labels from', path ,flush=True)
+    file_name = path[-path[::-1].index('/'):path.index('.txt')]
+    with open(path, 'r', newline='\n') as fp:
+        tsv_output = csv.reader(fp, delimiter='\n')
+        sequence = [] 
+        for _ in tsv_output:
+            sequence.append(int(_[0]))
+    sequence_labels = sequence
+    save_light_file_path = os.path.join(analysis_folder,'light_results',f'{file_name}.pkl')
+    save_all_file_path = os.path.join(analysis_folder,'all_results',f'{file_name}.pkl')
+    save_entropies_file_path = os.path.join(analysis_folder,'entropies_results',f'{file_name}.pkl')
 else:
     print('There is a problem with the dataset provided, only available options are 1, 2, 3, and 4.')
     exit()
@@ -268,7 +292,6 @@ result = analyse_sequence(
     consider_temporal_order_in_tuples=consider_temporal_order_in_tuples, 
     num_to_save=1000, 
     indices = [],
-    find_novelties = True, 
     use_D_as_D_indices = False, 
     D=None, 
     D2=None, 
