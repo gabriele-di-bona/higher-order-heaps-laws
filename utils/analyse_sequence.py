@@ -19,10 +19,10 @@ from analyse_higher_entropy import *
 
 def analyse_sequence(
     sequence=np.array([]), 
+    sequence_pairs=None, 
     consider_temporal_order_in_tuples=True, 
     num_to_save=1000, 
     indices = [],
-    find_novelties = True, 
     use_D_as_D_indices = False, 
     D=None, 
     D2=None, 
@@ -51,7 +51,6 @@ def analyse_sequence(
             - consider_temporal_order_in_tuples: if True, the pair AB is different from the pair BA. Else they are the same pair (bool)
             - num_to_save: at the end, the analysis is saved in a light dictionary,
                 where only the indices related to a linspace and geomspace of length num_to_save are actually saved (int)
-            - find_novelties: if D or D2 or D3 or D4 is None, finds novelties from sequence (bool)
             - use_D_as_D_indices: if whole sequence or D or D2 or D3 or D4 are not present, 
                 you can provide D_indices instead of D, etc. In this case indices have to be provided! (bool)
             - indices: useful only when use_D_as_D_indices == True. 
@@ -374,6 +373,7 @@ def analyse_sequence(
             
             entropy_results = analyse_sequence_higher_order_entropy(
                 sequence_labels,
+                sequence_pairs = sequence_pairs,
                 consider_temporal_order_in_tuples=consider_temporal_order_in_tuples, 
                 index_original_sequence = False,
                 number_reshuffles = number_reshuffles,

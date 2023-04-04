@@ -98,6 +98,7 @@ def get_entropies_sequence(
 
 def analyse_sequence_higher_order_entropy(
     sequence,
+    sequence_pairs = None, 
     consider_temporal_order_in_tuples=True, 
     index_original_sequence = False,
     number_reshuffles = 10,
@@ -113,7 +114,13 @@ def analyse_sequence_higher_order_entropy(
     else:
         indexed_sequence = sequence
 #     results['sequence'] = indexed_sequence
-    sequence_pairs, indexed_sequence_pairs = get_sequence_pairs(sequence, consider_temporal_order_in_tuples=consider_temporal_order_in_tuples)
+    if sequence_pairs is None:
+        sequence_pairs, indexed_sequence_pairs = get_sequence_pairs(sequence, consider_temporal_order_in_tuples=consider_temporal_order_in_tuples)
+    else:
+        if index_original_sequence:
+            indexed_sequence_pairs = index_sequence(sequence_pairs)
+        else:
+            indexed_sequence_pairs = sequence_pairs
 #     results['sequence_pairs'] = indexed_sequence_pairs
     results["dict_freq_list_entropies"], results["dict_freq_list_entropies_glob"] = get_entropies_sequence(
         sequence,
