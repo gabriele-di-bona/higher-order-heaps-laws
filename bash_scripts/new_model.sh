@@ -24,9 +24,6 @@ python new_model.py -ID ${SGE_TASK_ID} \
     -do_non_overlapping_simulation f \
     -trigger_links_with_replacement t \
     -triggering_links_among_all_non_explored_links f \
-    -look_among_all_non_explored_links_if_not_enough f \
-    -trigger_links_with_new_nodes_if_not_enough f \
-    -trigger_links_between_new_nodes_if_not_enough f \
     -putTogether t \
     -save_all False -save_raw_urn False -save_raw_sequence False -delete_files_put_together t \
     -do_prints f \

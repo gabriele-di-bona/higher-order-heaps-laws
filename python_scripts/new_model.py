@@ -71,18 +71,6 @@ parser.add_argument("-triggering_links_among_all_non_explored_links", "--trigger
     help="Impose overlapping links if true. [default True]",
     default=True)
 
-parser.add_argument("-look_among_all_non_explored_links_if_not_enough", "--look_among_all_non_explored_links_if_not_enough", type=lambda x: (str(x).lower() in ['true', 't', '1', 'yes', 'y']),
-    help="Impose overlapping links if true. [default True]",
-    default=True)
-
-parser.add_argument("-trigger_links_with_new_nodes_if_not_enough", "--trigger_links_with_new_nodes_if_not_enough", type=lambda x: (str(x).lower() in ['true', 't', '1', 'yes', 'y']),
-    help="Impose overlapping links if true. [default True]",
-    default=True)
-
-parser.add_argument("-trigger_links_between_new_nodes_if_not_enough", "--trigger_links_between_new_nodes_if_not_enough", type=lambda x: (str(x).lower() in ['true', 't', '1', 'yes', 'y']),
-    help="Impose overlapping links if true. [default True]",
-    default=True)
-
 parser.add_argument("-N_0", "--N_0", type=int,
     help="Initial number of nodes. [default 2]",
     default=2)
@@ -132,9 +120,6 @@ Tmax = arguments.Tmax
 do_non_overlapping_simulation = arguments.do_non_overlapping_simulation
 trigger_links_with_replacement = arguments.trigger_links_with_replacement
 triggering_links_among_all_non_explored_links = arguments.triggering_links_among_all_non_explored_links
-look_among_all_non_explored_links_if_not_enough = arguments.look_among_all_non_explored_links_if_not_enough
-trigger_links_with_new_nodes_if_not_enough = arguments.trigger_links_with_new_nodes_if_not_enough
-trigger_links_between_new_nodes_if_not_enough = arguments.trigger_links_between_new_nodes_if_not_enough
 N_0 = arguments.N_0
 M_0 = arguments.M_0
 putTogether = arguments.putTogether
@@ -145,7 +130,6 @@ delete_files_put_together = arguments.delete_files_put_together
 directed = arguments.directed
 do_prints = arguments.do_prints
 
-print('look_among_all_non_explored_links_if_not_enough', look_among_all_non_explored_links_if_not_enough, flush=True)
 # I'm doing 100 runs per each set of parameters, with nu going from 1 to rho-1
 
 # PARAMETERS
@@ -185,14 +169,6 @@ if trigger_links_with_replacement:
     
 if triggering_links_among_all_non_explored_links:
     main_dir += 'triggering_links_among_all_non_explored_links/'
-elif look_among_all_non_explored_links_if_not_enough:
-    main_dir += 'look_among_all_non_explored_links_if_not_enough/'
-
-if trigger_links_with_new_nodes_if_not_enough:
-    main_dir += 'trigger_links_with_new_nodes_if_not_enough/'
-
-if trigger_links_between_new_nodes_if_not_enough:
-    main_dir += 'trigger_links_between_new_nodes_if_not_enough/'
 
 work_dir = os.path.join(main_dir, f"simulations/analysis/rho_{rho:.5f}/nu_1{nu_1}/nu_2{nu_2}/Tmax_{Tmax}/N_0_{N_0}/M_0_{M_0}/")
 raw_urn_dir = os.path.join(main_dir, f"simulations/raw_urn/rho_{rho:.5f}/nu_1{nu_1}/nu_2{nu_2}/Tmax_{Tmax}/N_0_{N_0}/M_0_{M_0}/")
@@ -202,7 +178,7 @@ raw_sequence_dir = os.path.join(main_dir, f"simulations/raw_sequence/rho_{rho:.5
     
 if putTogether == False:
     # RUN THE SIMULATION
-    print("rho=%.5f, nu_1=%d, nu_2=%d, Tmax=%d, run=%d, do_non_overlapping_simulation=%s, trigger_links_with_replacement=%s, triggering_links_among_all_non_explored_links=%s, look_among_all_non_explored_links_if_not_enough=%s, trigger_links_with_new_nodes_if_not_enough=%s, trigger_links_between_new_nodes_if_not_enough=%s"%(rho,nu_1,nu_2,Tmax,run,str(do_non_overlapping_simulation), str(trigger_links_with_replacement), str(triggering_links_among_all_non_explored_links), str(look_among_all_non_explored_links_if_not_enough), str(trigger_links_with_new_nodes_if_not_enough), str(trigger_links_between_new_nodes_if_not_enough)), flush=True)
+    print("rho=%.5f, nu_1=%d, nu_2=%d, Tmax=%d, run=%d, directed=%s, do_non_overlapping_simulation=%s, trigger_links_with_replacement=%s, triggering_links_among_all_non_explored_links=%s"%(rho,nu_1,nu_2,Tmax,run,str(directed), str(do_non_overlapping_simulation), str(trigger_links_with_replacement), str(triggering_links_among_all_non_explored_links)), flush=True)
     
     save_all_file_path = os.path.join(work_dir, f"run_{run}.pkl")
     save_light_file_path = os.path.join(work_dir, f"light_run_{run}.pkl") 
@@ -219,14 +195,11 @@ if putTogether == False:
             N_0 = N_0, 
             M_0 = M_0, 
             Tmax = Tmax, 
+            directed = directed,
             do_non_overlapping_simulation = do_non_overlapping_simulation,
             trigger_links_with_replacement = trigger_links_with_replacement,
             triggering_links_among_all_non_explored_links = triggering_links_among_all_non_explored_links,
-            look_among_all_non_explored_links_if_not_enough = look_among_all_non_explored_links_if_not_enough,
-            trigger_links_with_new_nodes_if_not_enough = trigger_links_with_new_nodes_if_not_enough, 
-            trigger_links_between_new_nodes_if_not_enough = trigger_links_between_new_nodes_if_not_enough, 
             do_prints = do_prints,
-            directed = directed,
         )
         
         t = len(new_model.sequence_D1)
@@ -238,7 +211,10 @@ if putTogether == False:
         try:
             print('nu_1/rho', nu_1/rho, flush=True)
             print('nu_2/rho', nu_2/rho, flush=True)
-            print('nu_1/nu_2', nu_1/nu_2, flush=True)
+            try:
+                print('nu_1/nu_2', nu_1/nu_2, flush=True)
+            except:
+                pass
             print('beta1', log(D1) / log(t), flush=True)
             print('beta1 new', lin_regr_with_stats(np.log(np.arange(t)+1), np.log(np.array(new_model.sequence_D1)), intercept_left_lim = 0, intercept_right_lim = np.inf, get_more_statistcs = False, alpha_for_conf_interv = 0.99), flush=True)
             print('beta2', log(D2) / log(t), flush=True)
