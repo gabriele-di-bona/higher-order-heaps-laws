@@ -27,7 +27,7 @@ tar -xzvf lastfm-dataset-1K.tar.gz
 ```
 Now, the path of the file to analyse should be `~/data/ocelma-dataset/lastfm-dataset-1K/userid-timestamp-artid-artname-traid-traname.tsv`.
 
-This file is processed in a related section of the jupyter notebook `~/notebooks/prep_data.ipynb`, in which a dataframe is created including the timestamp, track and artist name and MBID, for a total of 19150866 records.
+This file is processed in a related section of the jupyter notebook `~/jupyter_notebooks/prep_data.ipynb`, in which a dataframe is created including the timestamp, track and artist name and MBID, for a total of 19150866 records.
 
 The df is hence time ordered and cleaned, excluding outliers (two records are outside the date ranges), and only users with at least 1000 records have been retained (890 out of 992).
 Moreover, tracks and artists are remapped to integer indices.
@@ -41,7 +41,7 @@ Clone this repository into `~/data/`. This will create a new subfolder `~/data/g
 Use the README.md of that repository to download all the books from Gutenberg.
 
 All texts to be analyzed should now be in `~/data/gutenberg/data/text/` as `.txt` files. 
-Similarly to Last.fm, these file are processed in a related section of the jupyter notebook `~/notebooks/prep_data.ipynb`. 
+Similarly to Last.fm, these file are processed in a related section of the jupyter notebook `~/jupyter_notebooks/prep_data.ipynb`. 
 Here, the book is first lemmatized, discarding all books with less than 1000 words.
 The language of the book is assessed using Google's cld3 package, and then words are also stemmed using the SnowballStemmer. 
 In this case, we retain books with at least 1000 words, for a total of 19637 books.
@@ -85,7 +85,7 @@ wget -B https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/20
 WARNING: The downloaded corpus (made of 6000 zip files) weighs about 192GB.
 
 #### Preprocess data
-In the notebook `~/notebooks/semanticscholar_dataset_creation.ipynb` we create the sequences of words to be examined in the paper.
+In the notebook `~/jupyter_notebooks/semanticscholar_dataset_creation.ipynb` we create the sequences of words to be examined in the paper.
 We run through the corpus looking at the journals with the highest number of english papers in each field. 
 The language of the book is assessed using Google's cld3 package.
 For each field of study (total of 19), we obtain a list of 1000 journals.
@@ -96,14 +96,14 @@ Finally, for this dataset of 19000 sequences, we index all words and stems.
 All this preprocessed data can be found in the created folder `~/data/semanticscholar/2022-01-01/data`. Here you can find the list of fields of study (`all_fieldsOfStudy.tsv`), the dictionaries to convert indices to words and words to their setms, as well as the folder `journals_fieldsOfStudy` containing 19 subfolders, one for each field, with the sequences of indexed words. A similar folder exists for the stems.
 
 #### Analyse data
-Finally, similarly to the previous data sets, the preprocessed files are analysed in a related section of the jupyter notebook `~/notebooks/prep_data.ipynb`. 
+Finally, similarly to the previous data sets, the preprocessed files are analysed in a related section of the jupyter notebook `~/jupyter_notebooks/prep_data.ipynb`. 
 
 Each sequence of words is loaded and analyzed, calculating $n$-th order Heaps' laws fits, with $n$ = 1, 2, 3, and 4, as well as shannon entropies of the stems in the sequences.
 
 
 ## Models
 
-### UMST model
+### UMT and UMST model
 This model has been proposed in Tria et al. (2014), "The dynamics of correlated novelties" (Scientific Reports). Other details about this model can be found in the paper.
 
 Here we create UMST simulations through the python script `~/python_scripts/launch_UMST.py` with related bash script `~/bash_scripts/launch_UMST.sh`. These run simulations through the command of the type:
@@ -121,7 +121,7 @@ In order to calculate averages over multiple runs across the same set of paramet
 #### Analytical results of the UMT
 The numerical integration of the differential equations found in the main paper has been done using the function `NIntegrate` of Mathematica 12, using a fine logarithmically spaced grid of N=1601 points $1 = t_0 < t_1 < \cdots < t_N = 10^{16}$. 
 Such analysis is done in `~/data/UMST/Analytic_UMT/AnalyticExp_final.nb` and `~/data/UMST/Analytic_UMT/AnalyticExp_triplet.nb`.
-The fit of the integrated points has instead been done in the Jupyter notebook `~/notebooks/figures.ipynb`.
+The fit of the integrated points has instead been done in the Jupyter notebook `~/jupyter_notebooks/figures.ipynb`.
 
 ### ERRW model
 This model has been proposed in Iacopini et al. (2018), "Network Dynamics of Innovation Processes" (Physical Review Letters). Other details about this model can be found in the paper.
@@ -139,6 +139,28 @@ python ~/python_scripts/analyse_sequences.py -ID N -folder "SW"
 Adding the argument `-order False`, it considers the pairs BA and AB as the same, so order is not considered.
 More info can be found in the python script.
 The results of such analysis are saved into `~/data/ERRW/SW/analysis/` with the same file name. 
+
+
+### New model
+In this manuscript we propose a new model that extends both the UMT and ERRW. 
+The model works as follows.
+A random walker (RW) moves onto a network that evolves and expands, with weighted links that change over time.
+At every time step, the RW moves from its current node, say $x$, to one of his neighboring nodes, say $y$, with probabilities depending on the weight $A_{x,y}$ of the outgoing links from $x$.
+The link just explored $(x,y)$ gets reinforced with a weight $\rho$, i.e., $A_{x,y} \to A_{x,y} + \rho$.
+If the chosen following node $y$ has never been explored before, then $y$ triggers the appearance of $\nu_1+1$ new nodes $z_i$ in the network attaching to $y$. In other words, we are adding the links $(y,z_i)$ with unitary weight.
+If the link $(x,y)$ we have moved has never been explored before, then it triggers the appearance of $\nu_2$ links never explored between already explored nodes. 
+
+You can find the translation of the model into code in `~/utils/new_model.py`. It can be called from another script to run multiple runs with different parameters, by using the python script `~/python_scripts/new_model.py` or `~/bash_scripts/new_model.sh`.
+This script runs the model with the given parameter rho, varying nu_1 and nu_2. If fraction_nu_2_cut_nu_1 is 0, nu_1 and nu_2 go from their starting to ending parameters (extremes included). Otherwise, nu_2 is upper bounded by min(ending_nu_1, fraction_nu_2_cut_nu_1 * nu_1). 
+With N_0=1 and M_0=0 you start from a single node considered explored (and triggered), with his children not explored added in the initialization.
+With 1<N_0<100 and M_0=0 you start from a single node and its nu_1 + 1 children considered explored, with the roots children that are also triggered but their children are not explored.
+With N>100 and M_0=0, the second layer of children are also triggered and considered explored.
+Imposing the parameter `directed` to be True, you can choose to have your network directed.
+Imposing the parameter `do_non_overlapping_simulation` to be True, you can choose to pick random links in the whole network, not just outgoing links. 
+Imposing the parameter `trigger_links_with_replacement` to be True, you can choose the new links between already explored nodes to be random, allowing replacement (you can add the same link more than once). Otherwise, you can only trigger links that do not exist between nodes that you have already explored. In practice this has little effect. 
+In the bash script, you can also impose `putTogether` to be True. With this, you don't run any simulation, but you collect all simulations within the same set of parameters, and put the results together, doing some further analysis on the averages. Furthermore, if `delete_files_put_together` is True, the files of each simulation are deleted, and only the created files with all simulations together are kept.
+Finally, if you need to debug, turn `do_prints` True.
+
 
 
 ## Other scripts to analyse data
@@ -179,5 +201,5 @@ The parameters `-rho`, ... , `Tmax` refer only to UMST, while `--folder_name_ERR
 More info can be found in the python script.
 
 ## Figures
-All data and models are loaded and further analysed in the Jupyter notebook `~/notebooks/figures.ipynb`.
+All data and models are loaded and further analysed in the Jupyter notebook `~/jupyter_notebooks/figures.ipynb`.
 All the figures, tables and measures found in the paper related to this repository has been made through this notebook.
