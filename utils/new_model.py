@@ -391,9 +391,9 @@ class new_model:
                     not_triggered_links_with_triggered_nodes.remove((first_tmp_node, second_tmp_nodes))
         else:
             try:
-                tmp_neighbors = self.nodes_triggered.difference(self.links_explored[first_node])
+                tmp_neighbors = self.nodes_triggered.difference(self.links_triggered[first_node])
             except KeyError as e:
-                print('ERROR get_unexplored_links_with_triggered_nodes', e, first_node,)
+                print('ERROR get_not_triggered_links_with_triggered_nodes', e, first_node,)
                 tmp_neighbors = self.nodes_triggered.copy()
             tmp_neighbors.remove(first_node)
             for tmp_node in tmp_neighbors:
