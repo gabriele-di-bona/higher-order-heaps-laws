@@ -1,11 +1,11 @@
 #!/bin/bash
 #$ -cwd
-#$ -t 1 # Last.fm: 890 # Project Gutenberg 2: 19637 # Semantic Scholar 3: 19000 # UMST 4: 2000 # ERRW 5: 150
+#$ -t 1-890 # Last.fm: 890 # Project Gutenberg 2: 19637 # Semantic Scholar 3: 19000 # UMST 4: 2000 # ERRW 5: 150 # dir_ERRW 6: 16
 #$ -j y    
 #$ -pe smp 1 
-#$ -l h_vmem=10G
+#$ -l h_vmem=1G
 # #$ -l highmem
-#$ -l h_rt=240:0:0
+#$ -l h_rt=1:0:0
 # #$ -m bae
 
 module load anaconda3
@@ -18,4 +18,4 @@ python analyse_sequences.py -ID ${SGE_TASK_ID} -number_reshuffles 10 -dataset_ID
     --consider_temporal_order_in_tuples True --analyse_sequence_labels False \
     -save_all True \
     -rho 20 -starting_nu 1 -ending_nu 20 -eta 1 -Tmax 100000 \
-    --folder_name_ERRW "SW"
+    --folder_name_ERRW "SW_k4"

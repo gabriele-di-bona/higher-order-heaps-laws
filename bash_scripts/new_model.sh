@@ -19,10 +19,10 @@ python new_model.py -ID ${SGE_TASK_ID} \
     -starting_nu_1 0 -ending_nu_1 10 \
     -starting_nu_2 0 -ending_nu_2 20 -Tmax 100000 \
     -fraction_nu_2_cut_nu_1 2 \
-    -N_0 1 -M_0 0 \
+    -N_0 10 -M_0 0 \
     -directed f \
-    -do_non_overlapping_simulation f \
-    -trigger_links_with_replacement t \
+    -do_non_overlapping_simulation t \
+    -trigger_links_with_replacement f \
     -triggering_links_among_all_non_explored_links f \
     -putTogether t \
     -save_all False -save_raw_urn False -save_raw_sequence False -delete_files_put_together t \
