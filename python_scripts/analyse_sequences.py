@@ -118,10 +118,10 @@ if dataset_ID == 1:
     if analyse_sequence_labels == True:
         sequence = sequence_labels
         save_all_file_path = os.path.join(analysis_folder, 'individual_results_artists', file_name + '.pkl')
-        save_light_file_path = os.path.join(analysis_folder, 'individual_results_artists_light', file_name + '.pkl')
+        save_light_file_path = os.path.join(analysis_folder, 'individual_results_artists_light', file_name + '_light.pkl')
     else:
         save_all_file_path = os.path.join(analysis_folder, 'individual_results', file_name + '.pkl')
-        save_light_file_path = os.path.join(analysis_folder, 'individual_results_light', file_name + '.pkl')
+        save_light_file_path = os.path.join(analysis_folder, 'individual_results_light', file_name + '_light.pkl')
     save_entropies_file_path = os.path.join(analysis_folder, 'individual_results_entropy', file_name + '.pkl')
     
     
@@ -134,7 +134,6 @@ elif dataset_ID == 2:
     filepaths = sorted(find_pattern('*.pkl', sequence_folder))
     path = filepaths[ID]
     file_name = path[-path[::-1].index('/'):path.index('.pkl')]
-    sequence_labels_path = os.path.join(sequence_labels_folder,f'{file_name}.tsv')
     print('Getting sequence from', path ,flush=True)
     print('Getting sequence_labels from', os.path.join(sequence_labels_folder, file_name + ".pkl") ,flush=True)
     with open(path, 'rb') as fp:
@@ -144,10 +143,10 @@ elif dataset_ID == 2:
     if analyse_sequence_labels == True:
         sequence = sequence_labels
         save_all_file_path = os.path.join(analysis_folder, 'individual_results_stems', file_name + '.pkl')
-        save_light_file_path = os.path.join(analysis_folder, 'individual_results_stems_light', file_name + '.pkl')
+        save_light_file_path = os.path.join(analysis_folder, 'individual_results_stems_light', file_name + '_light.pkl')
     else:
         save_all_file_path = os.path.join(analysis_folder, 'individual_results', file_name + '.pkl')
-        save_light_file_path = os.path.join(analysis_folder, 'individual_results_light', file_name + '.pkl')
+        save_light_file_path = os.path.join(analysis_folder, 'individual_results_light', file_name + '_light.pkl')
     save_entropies_file_path = os.path.join(analysis_folder, 'individual_results_entropy', file_name + '.pkl')
     
     
@@ -188,10 +187,10 @@ elif dataset_ID == 3:
     if analyse_sequence_labels == True:
         sequence = sequence_labels
         save_all_file_path = os.path.join(analysis_folder, 'journals_fieldsOfStudy_stems', fieldOfStudy, file_name + '.pkl')
-        save_light_file_path = os.path.join(analysis_folder, 'journals_fieldsOfStudy_stems_light', fieldOfStudy, file_name + '.pkl')
+        save_light_file_path = os.path.join(analysis_folder, 'journals_fieldsOfStudy_stems_light', fieldOfStudy, file_name + '_light.pkl')
     else:
         save_all_file_path = os.path.join(analysis_folder, 'journals_fieldsOfStudy', fieldOfStudy, file_name + '.pkl')
-        save_light_file_path = os.path.join(analysis_folder, 'journals_fieldsOfStudy_light', fieldOfStudy, file_name + '.pkl')
+        save_light_file_path = os.path.join(analysis_folder, 'journals_fieldsOfStudy_light', fieldOfStudy, file_name + '_light.pkl')
     save_entropies_file_path = os.path.join(analysis_folder, 'journals_fieldsOfStudy_entropy', fieldOfStudy,file_name + '.pkl')
     
     
@@ -300,6 +299,7 @@ result = analyse_sequence(
     sequence_labels = sequence_labels, 
     calculate_entropies_original = False, 
     calculate_entropies_labels = True,
+    number_reshuffles = number_reshuffles,
     save_all = save_all, 
     save_all_file_path = save_all_file_path, 
     save_light_file_path = save_light_file_path, 

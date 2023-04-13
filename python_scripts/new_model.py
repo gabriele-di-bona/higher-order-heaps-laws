@@ -292,7 +292,7 @@ if putTogether == False:
             
             result = analyse_sequence(
                 sequence=sequence, 
-                sequence_links=indexed_sequence_links, 
+                sequence_pairs=indexed_sequence_links, 
                 consider_temporal_order_in_tuples=True, 
                 num_to_save=1000, 
                 indices = [],
