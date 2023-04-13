@@ -343,33 +343,6 @@ def analyse_sequence(
                 print("Calculating entropies on sequence of labels at", datetime.now(), flush=True)
                 if len(sequence) != len(sequence_labels):
                     print("Achtung: len(sequence) != len(sequence_labels), values are",len(sequence), len(sequence_labels), flush=True)
-#             # Let's get the sequence of labels and their frequencies
-#             labels_freq = {}
-#             for t,label in enumerate(sequence_labels):
-#                 if label not in labels_freq:
-#                     labels_freq[label] = 1
-#                 else:
-#                     labels_freq[label] += 1
-#             labels_freq_keys = list(labels_freq.keys())
-#             labels_freq_values = list(labels_freq.values())
-#             labels_freq_keys = np.array(labels_freq_keys, dtype=np.int64)
-#             labels_freq_values = np.array(labels_freq_values, dtype=np.int64)
-#             entropies = entropyCalc(sequence_labels, labels_freq_keys, labels_freq_values)
-#             # Let's repeat on reshuffled sequence
-#             if do_prints == True:
-#                 print("Calculating now entropies on reshuffled sequence of labels at", datetime.now(), flush=True)
-#             tmp_sequence_labels = sequence_labels.copy()
-#             np.random.shuffle(tmp_sequence_labels)
-#             entropies_glob = entropyCalc(tmp_sequence_labels, labels_freq_keys, labels_freq_values)
-#             # Saving in results
-#             results["entropies"] = entropies
-#             results["entropies_glob"] = entropies_glob
-#             if do_prints == True:
-#                 print("Calculating now mean_entropies and weighted difference on sequence of labels at", datetime.now(), flush=True)
-#             results["weighted_diff_entropies"], results["entropies_sorted_keys"], results["entropies_sorted_weights"], \
-#                 results["mean_entropies"], results["mean_entropies_glob"] = \
-#                 get_weighted_difference_entropies(entropies, entropies_glob)
-#             results_light["weighted_diff_entropies"] = results["weighted_diff_entropies"]
             
             entropy_results = analyse_sequence_higher_order_entropy(
                 sequence_labels,
@@ -398,42 +371,6 @@ def analyse_sequence(
         # Compute entropies on the sequence of IDs to show semantic correlations
         if do_prints == True:
             print("Calculating entropies on sequence of IDs at", datetime.now(), flush=True)
-#         seq = sequence.copy()
-#         ### DEPRECATED
-#         # We can get the sequence frequencies from urn_freq, 
-#         # because the number of balls of a ID i in the urn are 1 + rho * n_i,
-#         # where n_i are the times it appeared in the sequence
-# #         sequence_freq = urn_freq.copy()
-# #         for i in sequence_freq.keys():
-# #             sequence_freq[i] -= 1
-# #             sequence_freq[i] = int(sequence_freq[i] / rho)
-#         labels_freq = {}
-#         for t,label in enumerate(sequence):
-#             if label not in labels_freq:
-#                 labels_freq[label] = 1
-#             else:
-#                 labels_freq[label] += 1
-#         labels_freq_keys = list(labels_freq.keys())
-#         labels_freq_values = list(labels_freq.values())
-#         labels_freq_keys = np.array(labels_freq_keys, dtype=np.int64)
-#         labels_freq_values = np.array(labels_freq_values, dtype=np.int64)
-#         entropies = entropyCalc(sequence_labels, labels_freq_keys, labels_freq_values)
-#         # Let's repeat on reshuffled sequence
-#         if do_prints == True:
-#             print("Calculating now entropies on reshuffled sequence of labels at", datetime.now(), flush=True)
-#         tmp_sequence_labels = sequence_labels.copy()
-#         np.random.shuffle(tmp_sequence_labels)
-#         entropies_glob = entropyCalc(tmp_sequence_labels, labels_freq_keys, labels_freq_values)
-#         # Saving in results
-#         results["entropies"] = entropies
-#         results["entropies_glob"] = entropies_glob
-#         if do_prints == True:
-#             print("Calculating now mean_entropies and weighted difference on sequence of IDs at", datetime.now(), flush=True)
-#         results["weighted_diff_entropies_original"], results["entropies_sorted_keys_original"], results["entropies_sorted_weights_original"], \
-#             results["mean_entropies_original"], results["mean_entropies_glob_original"] = \
-#             get_weighted_difference_entropies(entropies, entropies_glob)
-#         results_light["weighted_diff_entropies_original"] = results["weighted_diff_entropies_original"]
-        
         entropy_original_results = analyse_sequence_higher_order_entropy(
             sequence,
             consider_temporal_order_in_tuples=consider_temporal_order_in_tuples, 

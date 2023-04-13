@@ -135,6 +135,7 @@ def analyse_sequence_higher_order_entropy(
     if calc_entropy_pairs_on_reshuffled_singletons:
         dict_freq_list_entropies_glob_pairs_reshuffling_singletons = {}
         for n in range(number_reshuffles):
+            print(f'\tReshuffle n. {n}', flush=True)
             reshuffled_sequence = np.array(sequence.copy())
             np.random.shuffle(reshuffled_sequence)
             sequence_pairs, indexed_sequence_pairs = get_sequence_pairs(sequence, consider_temporal_order_in_tuples=consider_temporal_order_in_tuples)
