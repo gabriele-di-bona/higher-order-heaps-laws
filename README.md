@@ -165,21 +165,6 @@ Finally, if you need to debug, turn `do_prints` True.
 
 ## Other scripts to analyse data
 
-### Compute entropies
-Although this is included in the main calculation of the analysis of a sequence, we have built a python script that computes the Shannon entropies in the sequences of labels. 
-The computation is repeated on a number of reshuffles of the sequence for comparison with a null model of the same length, as well as on the sequences of pairs.
-
-The python script is `~/python_scripts/compute_entropies.py` and gets some arguments, as can be seen in the related bash script `~/bash_scripts/compute_entropies.sh` to launch them separately on each different sequence for all datasets and models through the cluster.
-
-To run the code on the N-th sequence of a specific dataset D (1 -> Last.fm, 2 -> Project Gutenberg, 3 -> Semantic Scholar, 4 -> UMST, 5 -> ERRW) with 10 reshuffles, just run
-```
-python ~/python_scripts/compute_entropies.py -ID N -number_reshuffles 10 -dataset_ID D
-```
-Adding the argument `-order False`, it considers the pairs BA and AB as the same, so order is not considered.
-More info can be found in the python script.
-
-ACHTUNG: the longer the sequence, the longer the computation of entropies! This does not scale quite well, so be careful.
-
 ### Analyse sequences
 We provide another script to run the analysis of a sequence either of a dataset or of a model. 
 Notice that, for the dataset, this doesn't do anything more that it is not already done in the related notebook to prepare the data. 
