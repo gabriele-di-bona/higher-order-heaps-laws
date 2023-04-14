@@ -494,6 +494,73 @@ else:
     for _ in average_results.keys():
         results[_] = average_results[_]
 
+    # Get D and get min_std max_std
+    
+    if save_all == True:
+        average_result_D = {
+            'D': [], 
+            'D2': [], 
+            'D3': [], 
+            'D4': [], 
+        }
+        count = 0
+        for path in paths:
+            with open(path, 'rb') as fp:
+                result = pickle.load(fp)
+            count += 1
+            average_result_D['D'].append(result['D'])
+            average_result_D['D2'].append(result['D2'])
+            average_result_D['D3'].append(result['D3'])
+            average_result_D['D4'].append(result['D4'])
+
+        for key in ['D', 'D2', 'D3', 'D4']:
+            average_result_D[key] = np.array(average_result_D[key])
+            mean = np.mean(average_result_D[key], axis=0)
+            std = np.std(average_result_D[key], axis=0)
+            average_result_D[key+'_plus_std'] = mean + std
+            average_result_D[key+'_minus_std'] = mean - std
+            average_result_D[key+'_25_percentile'] = np.percentile(average_result_D[key], 25, axis=0)
+            average_result_D[key+'_50_percentile'] = np.percentile(average_result_D[key], 50, axis=0)
+            average_result_D[key+'_75_percentile'] = np.percentile(average_result_D[key], 75, axis=0)
+            average_result_D[key] = mean
+
+        for _ in average_result_D.keys():
+            results[_] = average_result_D[_]
+    
+    else:
+        average_result_D = {
+            'D_indices': [], 
+            'D2_indices': [], 
+            'D3_indices': [], 
+            'D4_indices': [], 
+        }
+        count = 0
+        for path in paths:
+            with open(path, 'rb') as fp:
+                result = pickle.load(fp)
+            count += 1
+            average_result_D['D_indices'].append(result['D_indices'])
+            average_result_D['D2_indices'].append(result['D2_indices'])
+            average_result_D['D3_indices'].append(result['D3_indices'])
+            average_result_D['D4_indices'].append(result['D4_indices'])
+
+        for key in ['D_indices', 'D2_indices', 'D3_indices', 'D4_indices']:
+            average_result_D[key] = np.array(average_result_D[key])
+            mean = np.mean(average_result_D[key], axis=0)
+            std = np.std(average_result_D[key], axis=0)
+            average_result_D[key+'_plus_std'] = mean + std
+            average_result_D[key+'_minus_std'] = mean - std
+            average_result_D[key+'_25_percentile'] = np.percentile(average_result_D[key], 25, axis=0)
+            average_result_D[key+'_50_percentile'] = np.percentile(average_result_D[key], 50, axis=0)
+            average_result_D[key+'_75_percentile'] = np.percentile(average_result_D[key], 75, axis=0)
+            average_result_D[key] = mean
+
+        for _ in average_result_D.keys():
+            average_results[_] = average_result_D[_]
+
+    print(count)
+        
+    
     if save_all == False:
         with open(save_light_file_path,'wb') as fp:
             pickle.dump(average_results,fp)
