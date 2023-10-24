@@ -1,6 +1,6 @@
 #!/bin/bash
 #$ -cwd
-#$ -t 1-10
+#$ -t 1-30
 #$ -j y    
 #$ -pe smp 1 
 #$ -l h_vmem=50G 
@@ -14,4 +14,4 @@ conda activate gt
 # this bash script is supposed to be run from the subfolder outputs_put_together, so that the output goes directly there
 cd ../../python_scripts/
 
-python launch_UMST.py -ID ${SGE_TASK_ID} -rho 20 -eta 1 -starting_nu 1 -ending_nu 10 -Tmax 100000 -putTogether True -save_all False
+python launch_UMST.py -ID ${SGE_TASK_ID} -rho 20 -eta .5 -starting_nu 1 -ending_nu 30 -Tmax 100000 -putTogether True -save_all False
