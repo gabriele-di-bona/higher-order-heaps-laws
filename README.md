@@ -16,7 +16,8 @@ More thorough details are shown in the related paper, accessible at https://arxi
 If you use any of the material here provided, you must comply to the license of this code and the third-party terms and conditions of the data sets used here. Moreover, you must cite our work using the following bibtex entry:
 
 
-```@article{dibona2023dynamics,
+```
+@article{dibona2023dynamics,
   title={The dynamics of higher-order novelties},
   author={Di Bona, Gabriele and Bellina, Alessandro and De Marzo, Giordano and Petralia, Angelo and Iacopini, Iacopo and Latora, Vito},
   journal={arXiv preprint arXiv:2307.06147},
