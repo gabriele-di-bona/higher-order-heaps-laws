@@ -19,28 +19,78 @@ from index_sequence import *
 
 def compute_Heaps(
     sequence,
-    do_prints = True
 ):
     """
         Compute Heaps of an indexed sequence.
     """
     curr_D = 0
     D = np.zeros(len(sequence))
-    set_sequence = set()
-    if do_prints == True:
-        for t,x in enumerate(tqdm(sequence)):
-            if x not in set_sequence:
-                curr_D += 1
-                set_sequence.add(x)
-            D[t] = curr_D
-    else:
-        for t,x in enumerate(sequence):
-            if x not in set_sequence:
-                curr_D += 1
-                set_sequence.add(x)
-            D[t] = curr_D
-    return D
+    first_appear_sequence_dict = {}
+    for t,x in enumerate(sequence):
+        if x not in first_appear_sequence_dict:
+            curr_D += 1
+            first_appear_sequence_dict[x] = t
+        D[t] = curr_D
+    return D, first_appear_sequence_dict
 
+def put_together_Heaps(
+    ordered_dumped_D_files_paths = [],
+    ordered_dumped_dict_files_paths = [],
+    lengths_subsequences = [],
+    Tmax = 0,
+    compute_D_indices = False,
+    indices = [],
+    tmp_folder = "",
+):
+    previous_Tmax = 0
+    for curr_file_id, file_path in enumerate(ordered_dumped_dict_files_paths):
+        with open(file_path, 'rb') as fp:
+            tmp_first_appear_sequence_dict = joblib.load(fp)
+        to_dump_tmp_first_appear_sequence_dict = tmp_first_appear_sequence_dict.copy()
+        for previous_file_path in ordered_dumped_dict_files_paths[:curr_file_id]:
+            with open(file_path, 'rb') as fp:
+                other_first_appear_sequence_dict = joblib.load(fp)
+            for x, local_t in tmp_first_appear_sequence_dict.items():
+                try:
+                    _ = other_first_appear_sequence_dict[x]
+                    del to_dump_tmp_first_appear_sequence_dict[x]
+                except:
+                    pass
+            # update dict, so that you don't double check elements already found
+            tmp_first_appear_sequence_dict = to_dump_tmp_first_appear_sequence_dict.copy()
+        # dump only the times
+        with open(os.path.join(tmp_folder, f'{curr_file_id}.pkl'), 'wb') as fp:
+            joblib.dump(np.array(sorted(list(to_dump_tmp_first_appear_sequence_dict.values())), dtype = np.int) + previous_Tmax, fp)
+        previous_Tmax += lengths_subsequences[curr_file_id]
+        
+    if compute_D_indices == False:
+        D = np.zeros(Tmax)
+        for curr_file_id range(len(ordered_dumped_dict_files_paths)):
+            with open(os.path.join(tmp_folder, f'{curr_file_id}.pkl'), 'wb') as fp:
+                novelty_times = joblib.load(fp)
+            for novelty_time in novelty_times:
+                D[novelty_time:] += 1
+    else:
+        D = np.zeros(len(indices))
+        curr_D = 0
+        curr_index_D = 0
+        for curr_file_id range(len(ordered_dumped_dict_files_paths)):
+            with open(os.path.join(tmp_folder, f'{curr_file_id}.pkl'), 'wb') as fp:
+                novelty_times = joblib.load(fp)
+            curr_index_novelty_times = 0
+            curr_novelty_time = novelty_times[curr_index_novelty_times]
+            while curr_index_novelty_times < len(novelty_times):
+                if curr_novelty_time < indices[curr_index_D]:
+                    curr_index_novelty_times += 1
+                    curr_novelty_time = novelty_times[curr_index_novelty_times]
+                    curr_D += 1
+                else:
+                    D[curr_index_D] = curr_D
+                    curr_index_D += 1
+                    bound_t = indices[curr_index_D]
+            
+    return D
+    
 
 def analyse_sequence(
     sequence=np.array([]), 
@@ -51,20 +101,10 @@ def analyse_sequence(
     use_D_as_D_indices = False, 
     D=None, 
     D2=None, 
-    D3=None,
-    D4=None, 
     do_also_D2 = True,
-    do_also_D3 = True,
-    do_also_D4 = True,
-    sequence_labels = None, 
-    calculate_entropies_original = False, 
-    calculate_entropies_labels = True,
-    number_reshuffles = 10, 
     save_all=False, 
     save_all_file_path = "./test.pkl", 
     save_light_file_path = "./test_light.pkl",
-    save_entropies_file_path = "./test_entropy.pkl",
-    save_entropies_original_file_path = "./test_entropy_original.pkl",
     calculate_beta_loglogregr_indices = False,
     do_prints = True, 
     return_all = False
@@ -117,7 +157,6 @@ def analyse_sequence(
     '''
     # safety check that the provided sequence is a numpy array and not a list
     sequence = np.array(sequence)
-    sequence_labels = np.array(sequence_labels)
     if use_D_as_D_indices == False:
         Tmax = len(sequence)
         
@@ -359,7 +398,7 @@ def analyse_sequence(
         results["beta2_mean_indices"] = beta2_mean_indices
         if do_also_D3:
             results["beta3_mean_indices"] = beta3_mean_indices
-            if do_also_D4:
+            if do_also_D3:
                 results["beta4_mean_indices"] = beta4_mean_indices
     for _ in ["beta_mean_indices", "beta2_mean_indices", "beta3_mean_indices", "beta4_mean_indices"]:
         try:
@@ -426,56 +465,53 @@ def analyse_sequence(
     results["std_err_beta_loglogregr_indices_geom"] = np.array(std_err_beta_loglogregr_indices_geom)
     results["std_err_intercept_loglogregr_indices_geom"] = np.array(std_err_intercept_loglogregr_indices_geom)
     
-    if do_also_D2:
-        D2_indices_geom = results['D2_indices'][indices_geom]
-        beta2_loglogregr_indices_geom = []
-        intercept2_loglogregr_indices_geom = []
-        std_err_beta2_loglogregr_indices_geom = []
-        std_err_intercept2_loglogregr_indices_geom = []
-        for i in range(len(ts_geom)):
-            slope, intercept, std_err = powerLawRegrPoints(ts_geom[max(1,i-100)+1:i+1]-1, D2_indices_geom[max(1,i-100)+1:i+1], intercept_left_lim = 0, intercept_right_lim = np.inf)
-            beta2_loglogregr_indices_geom.append(slope)
-            intercept2_loglogregr_indices_geom.append(intercept)
-            std_err_beta2_loglogregr_indices_geom.append(std_err[0])
-            std_err_intercept2_loglogregr_indices_geom.append(std_err[1])
-        results["beta2_loglogregr_indices_geom"] = np.array(beta2_loglogregr_indices_geom)
-        results["intercept2_loglogregr_indices_geom"] = np.array(intercept2_loglogregr_indices_geom)
-        results["std_err_beta2_loglogregr_indices_geom"] = np.array(std_err_beta2_loglogregr_indices_geom)
-        results["std_err_intercept2_loglogregr_indices_geom"] = np.array(std_err_intercept2_loglogregr_indices_geom)
-
-        if do_also_D3:
-            D3_indices_geom = results['D3_indices'][indices_geom]
-            beta3_loglogregr_indices_geom = []
-            intercept3_loglogregr_indices_geom = []
-            std_err_beta3_loglogregr_indices_geom = []
-            std_err_intercept3_loglogregr_indices_geom = []
-            for i in range(len(ts_geom)):
-                slope, intercept, std_err = powerLawRegrPoints(ts_geom[max(2,i-100)+1:i+1]-2, D3_indices_geom[max(2,i-100)+1:i+1], intercept_left_lim = 0, intercept_right_lim = np.inf)
-                beta3_loglogregr_indices_geom.append(slope)
-                intercept3_loglogregr_indices_geom.append(intercept)
-                std_err_beta3_loglogregr_indices_geom.append(std_err[0])
-                std_err_intercept3_loglogregr_indices_geom.append(std_err[1])
-            results["beta3_loglogregr_indices_geom"] = np.array(beta3_loglogregr_indices_geom)
-            results["intercept3_loglogregr_indices_geom"] = np.array(intercept3_loglogregr_indices_geom)
-            results["std_err_beta3_loglogregr_indices_geom"] = np.array(std_err_beta3_loglogregr_indices_geom)
-            results["std_err_intercept3_loglogregr_indices_geom"] = np.array(std_err_intercept3_loglogregr_indices_geom)
-
-            if do_also_D4:
-                D4_indices_geom = results['D4_indices'][indices_geom]
-                beta4_loglogregr_indices_geom = []
-                intercept4_loglogregr_indices_geom = []
-                std_err_beta4_loglogregr_indices_geom = []
-                std_err_intercept4_loglogregr_indices_geom = []
-                for i in range(len(ts_geom)):
-                    slope, intercept, std_err = powerLawRegrPoints(ts_geom[max(3,i-100)+1:i+1]-3, D4_indices_geom[max(3,i-100)+1:i+1], intercept_left_lim = 0, intercept_right_lim = np.inf)
-                    beta4_loglogregr_indices_geom.append(slope)
-                    intercept4_loglogregr_indices_geom.append(intercept)
-                    std_err_beta4_loglogregr_indices_geom.append(std_err[0])
-                    std_err_intercept4_loglogregr_indices_geom.append(std_err[1])
-                results["beta4_loglogregr_indices_geom"] = np.array(beta4_loglogregr_indices_geom)
-                results["intercept4_loglogregr_indices_geom"] = np.array(intercept4_loglogregr_indices_geom)
-                results["std_err_beta4_loglogregr_indices_geom"] = np.array(std_err_beta4_loglogregr_indices_geom)
-                results["std_err_intercept4_loglogregr_indices_geom"] = np.array(std_err_intercept4_loglogregr_indices_geom)
+    D2_indices_geom = results['D2_indices'][indices_geom]
+    beta2_loglogregr_indices_geom = []
+    intercept2_loglogregr_indices_geom = []
+    std_err_beta2_loglogregr_indices_geom = []
+    std_err_intercept2_loglogregr_indices_geom = []
+    for i in range(len(ts_geom)):
+        slope, intercept, std_err = powerLawRegrPoints(ts_geom[max(1,i-100)+1:i+1]-1, D2_indices_geom[max(1,i-100)+1:i+1], intercept_left_lim = 0, intercept_right_lim = np.inf)
+        beta2_loglogregr_indices_geom.append(slope)
+        intercept2_loglogregr_indices_geom.append(intercept)
+        std_err_beta2_loglogregr_indices_geom.append(std_err[0])
+        std_err_intercept2_loglogregr_indices_geom.append(std_err[1])
+    results["beta2_loglogregr_indices_geom"] = np.array(beta2_loglogregr_indices_geom)
+    results["intercept2_loglogregr_indices_geom"] = np.array(intercept2_loglogregr_indices_geom)
+    results["std_err_beta2_loglogregr_indices_geom"] = np.array(std_err_beta2_loglogregr_indices_geom)
+    results["std_err_intercept2_loglogregr_indices_geom"] = np.array(std_err_intercept2_loglogregr_indices_geom)
+    
+    D3_indices_geom = results['D3_indices'][indices_geom]
+    beta3_loglogregr_indices_geom = []
+    intercept3_loglogregr_indices_geom = []
+    std_err_beta3_loglogregr_indices_geom = []
+    std_err_intercept3_loglogregr_indices_geom = []
+    for i in range(len(ts_geom)):
+        slope, intercept, std_err = powerLawRegrPoints(ts_geom[max(2,i-100)+1:i+1]-2, D3_indices_geom[max(2,i-100)+1:i+1], intercept_left_lim = 0, intercept_right_lim = np.inf)
+        beta3_loglogregr_indices_geom.append(slope)
+        intercept3_loglogregr_indices_geom.append(intercept)
+        std_err_beta3_loglogregr_indices_geom.append(std_err[0])
+        std_err_intercept3_loglogregr_indices_geom.append(std_err[1])
+    results["beta3_loglogregr_indices_geom"] = np.array(beta3_loglogregr_indices_geom)
+    results["intercept3_loglogregr_indices_geom"] = np.array(intercept3_loglogregr_indices_geom)
+    results["std_err_beta3_loglogregr_indices_geom"] = np.array(std_err_beta3_loglogregr_indices_geom)
+    results["std_err_intercept3_loglogregr_indices_geom"] = np.array(std_err_intercept3_loglogregr_indices_geom)
+    
+    D4_indices_geom = results['D4_indices'][indices_geom]
+    beta4_loglogregr_indices_geom = []
+    intercept4_loglogregr_indices_geom = []
+    std_err_beta4_loglogregr_indices_geom = []
+    std_err_intercept4_loglogregr_indices_geom = []
+    for i in range(len(ts_geom)):
+        slope, intercept, std_err = powerLawRegrPoints(ts_geom[max(3,i-100)+1:i+1]-3, D4_indices_geom[max(3,i-100)+1:i+1], intercept_left_lim = 0, intercept_right_lim = np.inf)
+        beta4_loglogregr_indices_geom.append(slope)
+        intercept4_loglogregr_indices_geom.append(intercept)
+        std_err_beta4_loglogregr_indices_geom.append(std_err[0])
+        std_err_intercept4_loglogregr_indices_geom.append(std_err[1])
+    results["beta4_loglogregr_indices_geom"] = np.array(beta4_loglogregr_indices_geom)
+    results["intercept4_loglogregr_indices_geom"] = np.array(intercept4_loglogregr_indices_geom)
+    results["std_err_beta4_loglogregr_indices_geom"] = np.array(std_err_beta4_loglogregr_indices_geom)
+    results["std_err_intercept4_loglogregr_indices_geom"] = np.array(std_err_intercept4_loglogregr_indices_geom)
         
     for _ in [
         "beta_loglogregr_indices_geom", 

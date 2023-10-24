@@ -243,7 +243,7 @@ else:
     indices = average_results["indices"]
     if indices[0] == 1:
         indices = list(np.array(indices)-1) # first index is 0, which correspond to t = 1
-    results_tmp = analyse_sequence(sequence=None, num_to_save=num_to_save, find_novelties = False, 
+    results_tmp = analyse_sequence(sequence=None, num_to_save=num_to_save, #find_novelties = False, 
                              use_D_as_D_indices = True, indices = indices,
                              calculate_entropies_original = False, calculate_entropies_labels = False,
                              D=D_indices, D2=D2_indices, D3=D3_indices, D4=D4_indices, 
