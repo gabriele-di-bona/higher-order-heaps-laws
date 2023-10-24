@@ -1,16 +1,30 @@
-# Higher order Heaps' laws
+# _The dynamics of higher order novelties_ (by G. Di Bona, A. Bellina, G. De Marzo, A. Petralia, I. Iacopini, and V. Latora)
 
-Here we provide all the necessary code and instructions to analyse both datasets and model simulations. 
-References to data repositories and code to simulate the models are provided.
+In this repository we provide all the necessary code and instructions to analyse both datasets and model simulations. 
+References to data repositories and code to simulate the models are provided below.
 
 In this analysis, we analyse the number $D_n(t)$ of novel combinations of $n$ = 1, 2, 3, or 4 consecutive elements in a ordered sequence of items/concepts/songs/words/events.
 This way one can define the n-th order Heaps' laws as the power-law behavior of $D_n(t)$ as a function of the number of combinations $t$ in the sequence.
 
 One can also study the distribution of the appearance of different combinations throughout the sequence through the calculation of the Shannon entropy of each label.
 
-More thorough details are shown in the paper **_TODO_**.
-
 In the rest of this repository, we refer to the root folder `~/` as the main folder where all the content of this repository is contained.
+
+More thorough details are shown in the related paper, accessible at https://arxiv.org/abs/2307.06147.
+
+## Reference
+If you use any of the material here provided, you must comply to the license of this code and the third-party terms and conditions of the data sets used here. Moreover, you must cite our work using the following bibtex entry:
+
+
+```@article{dibona2023dynamics,
+  title={The dynamics of higher-order novelties},
+  author={Di Bona, Gabriele and Bellina, Alessandro and De Marzo, Giordano and Petralia, Angelo and Iacopini, Iacopo and Latora, Vito},
+  journal={arXiv preprint arXiv:2307.06147},
+  year={2023}
+}
+```
+
+
 
 ## Get and prepare data
 All data and analysis must be saved into the subfolder `~/data/`
